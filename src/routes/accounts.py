@@ -199,9 +199,10 @@ async def reset_password(
         )
 
     try:
-        user.password = hash_password(data.password)
+        user._hashed_password = hash_password(data.password)
         await db.delete(token_record)
         await db.commit()
+        await db.refresh(user)
     except SQLAlchemyError:
         await db.rollback()
         raise HTTPException(
